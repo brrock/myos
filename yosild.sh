@@ -1,21 +1,21 @@
 #!/bin/sh
 # ---------------------------------------
-# Yosild - Your simple Linux distro
-  version="3.2.1"
-# (c) Jaromaz https://jm.iq.pl
+# MYOS - your own simple linux distro
+  version="0.1"
+# (c)oringal version made by Jaromaz https://jm.iq.pl
 # Yosild is licensed under
 # GNU General Public License v3.0
 # ---------------------------------------
 
 # ----- Config --------------------------
-device="sdc"
-distro_name="Yosild"
+device="sdb"
+distro_name="myos"
 distro_desc="Your simple Linux distro"
-distro_codename="chinchilla"
+distro_codename="onepointo"
 telnetd_enabled="true"
 hyperv_support="false"
-kernel="https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.16.19.tar.xz"
-busybox="https://busybox.net/downloads/busybox-1.34.1.tar.bz2"
+kernel="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.10.6.tar.xz"
+busybox="https://busybox.net/downloads/busybox-1.36.1.tar.bz2"
 # ---------------------------------------
 
 if [ $(id -u) -ne 0 ]; then
@@ -45,7 +45,7 @@ if [ $answer != "y" ] ; then
 
   apt update && apt install -y ca-certificates wget build-essential\
       libncurses5 libncurses5-dev bison flex libelf-dev chrpath gawk\
-      texinfo libsdl1.2-dev whiptail diffstat cpio libssl-dev bc
+      texinfo libsdl1.2-dev whiptail diffstat cpio libssl-dev bc efibootmgr
 
   cd files/
   rm -r busybox* > /dev/null 2>&1
@@ -122,7 +122,7 @@ initrd_file=initrd.img-$kernel_release-$arch
 cp files/linux/arch/$arch/boot/bzImage /mnt/boot/$kernel_file
 
 echo "** Installation of GRUB"
-grub-install --root-directory=/mnt /dev/$device
+grub-install --root-directory=/mnt /dev/$device 
 printf "timeout=3
 menuentry '$distro_name - $distro_desc' {
 linux /boot/$kernel_file quiet rootdelay=130
