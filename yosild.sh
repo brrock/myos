@@ -44,7 +44,7 @@ if [ $answer != "y" ] ; then
   echo "** BusyBox installation"
 
   apt update && apt install -y ca-certificates wget build-essential\
-      libncurses5 libncurses5-dev bison flex libelf-dev chrpath gawk\
+       libncurses5-dev bison flex libelf-dev chrpath gawk\
       texinfo libsdl1.2-dev whiptail diffstat cpio libssl-dev bc efibootmgr
 
   cd files/
