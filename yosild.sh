@@ -253,7 +253,7 @@ initrd_file=initrd.img-$kernel_release-$arch
 cp files/linux/arch/$arch/boot/bzImage /mnt/boot/$kernel_file
 
 echo "** Installation of GRUB"
-grub-install /dev/$device 
+grub-install /dev/$device --target=i386-pc
 printf "timeout=3
 menuentry '$distro_name - $distro_desc' {
 linux /boot/$kernel_file quiet rootdelay=130
