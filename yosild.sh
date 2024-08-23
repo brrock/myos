@@ -46,7 +46,7 @@ if [ $answer != "y" ] ; then
   apt update && apt install -y ca-certificates wget build-essential\
        libncurses5-dev bison flex libelf-dev chrpath gawk\
       texinfo libsdl1.2-dev whiptail diffstat cpio libssl-dev bc efibootmgr\
-      git patch
+      git patch curl
 
   cd files/
   rm -r busybox* > /dev/null 2>&1
