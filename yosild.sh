@@ -52,7 +52,7 @@ if [ $answer != "y" ] ; then
   rm -r busybox* > /dev/null 2>&1
   git clone https://git.busybox.net/busybox busybox
   cd busybox
-  wget https://git.busybox.net/busybox/patch/?id=d3539be8f27b8cbfdfee460fe08299158f08bcd9 -o busybox.patch
+  wget -O busybox.patch https://git.busybox.net/busybox/patch/?id=d3539be8f27b8cbfdfee460fe08299158f08bcd9 
   patch busybox.patch
   # BusyBox configuration --------------------------------
   make defconfig
