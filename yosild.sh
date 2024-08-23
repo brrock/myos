@@ -46,12 +46,14 @@ if [ $answer != "y" ] ; then
   apt update && apt install -y ca-certificates wget build-essential\
        libncurses5-dev bison flex libelf-dev chrpath gawk\
       texinfo libsdl1.2-dev whiptail diffstat cpio libssl-dev bc efibootmgr\
-      git
+      git patch
 
   cd files/
   rm -r busybox* > /dev/null 2>&1
   git clone https://git.busybox.net/busybox busybox
   cd busybox
+  wget https://git.busybox.net/busybox/patch/?id=d3539be8f27b8cbfdfee460fe08299158f08bcd9 -o busybox.patch
+  patch busybox.patch
   # BusyBox configuration --------------------------------
   make defconfig
   # ------------------------------------------------------
