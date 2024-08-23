@@ -45,21 +45,15 @@ if [ $answer != "y" ] ; then
 
   apt update && apt install -y ca-certificates wget build-essential\
        libncurses5-dev bison flex libelf-dev chrpath gawk\
-      texinfo libsdl1.2-dev whiptail diffstat cpio libssl-dev bc efibootmgr
+      texinfo libsdl1.2-dev whiptail diffstat cpio libssl-dev bc efibootmgr\
+      git
 
   cd files/
   rm -r busybox* > /dev/null 2>&1
-  wget $busybox -O busybox.tar.bz2
-  tar -xf busybox.tar.bz2
-  rm *.tar.bz2
-  mv busybox* busybox
+  git clone https://git.busybox.net/busybox busybox
   cd busybox
-  make defconfig
-
   # BusyBox configuration --------------------------------
-  sed 's/^.*CONFIG_STATIC.*$/CONFIG_STATIC=y/' -i .config
-  sed 's/^CONFIG_MAN=y/CONFIG_MAN=n/' -i .config
-  echo "CONFIG_STATIC_LIBGCC=y" >> .config
+  make defconfig
   # ------------------------------------------------------
   make
   cd ../../
@@ -122,7 +116,7 @@ initrd_file=initrd.img-$kernel_release-$arch
 cp files/linux/arch/$arch/boot/bzImage /mnt/boot/$kernel_file
 
 echo "** Installation of GRUB"
-grub-install --root-directory=/mnt /dev/$device 
+grub-install --root-directory=/mnt /dev/$device --target=x86_64-efi
 printf "timeout=3
 menuentry '$distro_name - $distro_desc' {
 linux /boot/$kernel_file quiet rootdelay=130
