@@ -215,8 +215,8 @@ rootuuid=$(blkid "/dev/${device}2" -s UUID -o value)
 
 
 mount /dev/${device}2 /mnt
-mkdir -pv /mnt/boot
-mount /dev/${device}1 /mnt/boot
+mkdir -pv /mnt/boot/efi
+mount /dev/${device}1 /mnt/boot/efi
 host=$(printf $(printf $distro_name | tr A-Z a-z) | cut -d" " -f 1)
 
 echo "** Compilation of the kernel"
