@@ -308,7 +308,7 @@ text-align:center;font-family:Arial}</style></head><body><h1>It works!</h1><hr>
 EOF
 
 # fstab
-fstab_file="test.txt"
+fstab_file="etc/fstab"
 
 # Clean up and create a new file
 rm -f "$fstab_file"
@@ -317,7 +317,7 @@ touch "$fstab_file"
 # Write the fstab entries into the file
 cat << EOF > "$fstab_file"
 UUID=$rootuuid  /      ext4  defaults,errors=remount-ro  0  1
-UUID=$bootuuid  /boot  vfat  umask=0077                  0  1
+UUID=$bootuuid  /boot/efi  vfat  umask=0077                  0  1
 EOF
 # Path, prompt and aliases
 cat << EOF > etc/profile
