@@ -206,7 +206,7 @@ sgdisk -n 1:2048:+512M -t 1:ef00 -c 1:"EFI System" /dev/$device
 sgdisk -n 2:0:0 -t 2:8300 -c 2:"Linux Filesystem" /dev/$device
 
 # Format partitions
-mkfs.vfat -F32 "/dev/${device}"  # Format the EFI partition as VFAT
+mkfs.vfat -F 32 "/dev/${device}1"  # Format the EFI partition as VFAT
 mkfs.ext4 "/dev/${device}2"        # Format the root partition as ext4
 
 # Get UUIDs of the partitions
