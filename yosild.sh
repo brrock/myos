@@ -200,15 +200,17 @@ fi
 echo "** Partitioning /dev/$device" && sleep 2
 sgdisk --zap-all $device
 
-# Create the partitions:
-# 1. Partition 1: EFI System (vfat) with size 512MB and type ef00
-# 2. Partition 2: Linux filesystem with the remaining space and type 8300
-device="sdb"
-sgdisk -n 1:2048:+512M -t 1:ef00 -c 1:"EFI System" $device
-sgdisk -n 2:0:0 -t 2:8300 -c 2:"Linux Filesystem" $device
+sgdisk -n 1:2048:+512M -t 1:ef00 -c 1:"EFI System" $device_path
+sgdisk -n 2:0:0 -t 2:8300 -c 2:"Linux Filesystem" $device_path
 
-bootuuid=$(blkid /dev/${device}1 -sUUID -ovalue)
-rootuuid=$(blkid /dev/${device}2 -sUUID -ovalue)
+# Format partitions
+mkfs.vfat -F32 "${device_path}1"  # Format the EFI partition as VFAT
+mkfs.ext4 "${device_path}2"        # Format the root partition as ext4
+
+# Get UUIDs of the partitions
+bootuuid=$(blkid "${device_path}1" -s UUID -o value)
+rootuuid=$(blkid "${device_path}2" -s UUID -o value)
+
 
 mount /dev/${device}2 /mnt
 mkdir /mnt/boot
@@ -304,8 +306,17 @@ text-align:center;font-family:Arial}</style></head><body><h1>It works!</h1><hr>
 EOF
 
 # fstab
-echo -ne "UUID=$rootuuid  /  ext4  defaults,errors=remount-ro  0  1" > etc/fstab
+fstab_file="test.txt"
 
+# Clean up and create a new file
+rm -f "$fstab_file"
+touch "$fstab_file"
+
+# Write the fstab entries into the file
+cat << EOF > "$fstab_file"
+UUID=$rootuuid  /      ext4  defaults,errors=remount-ro  0  1
+UUID=$bootuuid  /boot  vfat  umask=0077                  0  1
+EOF
 # Path, prompt and aliases
 cat << EOF > etc/profile
 uname -snrvm
