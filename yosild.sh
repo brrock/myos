@@ -27,10 +27,11 @@ printf "** Are you sure that you want to delete all data from /dev/$device drive
 read answer
 [ $answer != "y" ] && exit 1
 if [ $( mountpoint -qd /mnt ) ]; then
-  printf "** Can I umount /mnt? (y/n): "
+  printf "** Can I umount /mnt and /mnt/boot? (y/n): "
   read answer
   [ $answer != "y" ] && exit 1
   umount /mnt
+  umount /mnt/boot
 fi
 
 # installation of the BusyBox
@@ -198,22 +199,22 @@ fi
 
 
 echo "** Partitioning /dev/$device" && sleep 2
-sgdisk --zap-all $device
+sgdisk --zap-all /dev/$device
 
-sgdisk -n 1:2048:+512M -t 1:ef00 -c 1:"EFI System" $device_path
-sgdisk -n 2:0:0 -t 2:8300 -c 2:"Linux Filesystem" $device_path
+sgdisk -n 1:2048:+512M -t 1:ef00 -c 1:"EFI System" /dev/$device
+sgdisk -n 2:0:0 -t 2:8300 -c 2:"Linux Filesystem" /dev/$device
 
 # Format partitions
-mkfs.vfat -F32 "${device_path}1"  # Format the EFI partition as VFAT
-mkfs.ext4 "${device_path}2"        # Format the root partition as ext4
+mkfs.vfat -F32 "/dev/${device}"  # Format the EFI partition as VFAT
+mkfs.ext4 "/dev/${device}2"        # Format the root partition as ext4
 
 # Get UUIDs of the partitions
-bootuuid=$(blkid "${device_path}1" -s UUID -o value)
-rootuuid=$(blkid "${device_path}2" -s UUID -o value)
+bootuuid=$(blkid "/dev/${device}1" -s UUID -o value)
+rootuuid=$(blkid "/dev/${device}2" -s UUID -o value)
 
 
 mount /dev/${device}2 /mnt
-mkdir /mnt/boot
+mkdir -pv /mnt/boot
 mount /dev/${device}1 /mnt/boot
 host=$(printf $(printf $distro_name | tr A-Z a-z) | cut -d" " -f 1)
 
