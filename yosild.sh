@@ -577,7 +577,7 @@ find . | cpio -H newc -o 2> /dev/null | gzip > /mnt/boot/$initrd_file
 cd ..
 chmod 400 /mnt/boot/$initrd_file
 rm -r rootfs
-umount /mnt
+# umount /mnt
 printf "\n** all done **\n\n"
 
 
