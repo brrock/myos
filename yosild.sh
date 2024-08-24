@@ -198,19 +198,21 @@ fi
 
 
 echo "** Partitioning /dev/$device" && sleep 2
-part=1
-lba=2048
-wipefs -af /dev/$device > /dev/null 2>&1
-  echo "** Preparation of the system partition"
-  printf "n\np\n${part}\n2048\n\nw\n" | \
-	 ./files/busybox/busybox fdisk /dev/$device > /dev/null 2>&1
+sgdisk --zap-all $device
 
-echo y | mkfs.ext4 /dev/${device}${part}
-uuid=$(blkid /dev/${device}${part} -sUUID -ovalue)
+# Create the partitions:
+# 1. Partition 1: EFI System (vfat) with size 512MB and type ef00
+# 2. Partition 2: Linux filesystem with the remaining space and type 8300
+device="sdb"
+sgdisk -n 1:2048:+512M -t 1:ef00 -c 1:"EFI System" $device
+sgdisk -n 2:0:0 -t 2:8300 -c 2:"Linux Filesystem" $device
 
+bootuuid=$(blkid /dev/${device}1 -sUUID -ovalue)
+rootuuid=$(blkid /dev/${device}2 -sUUID -ovalue)
 
-mount /dev/${device}${part} /mnt
+mount /dev/${device}2 /mnt
 mkdir /mnt/boot
+mount /dev/${device}1 /mnt/boot
 host=$(printf $(printf $distro_name | tr A-Z a-z) | cut -d" " -f 1)
 
 echo "** Compilation of the kernel"
@@ -258,7 +260,7 @@ printf "timeout=3
 menuentry '$distro_name - $distro_desc' {
 linux /boot/$kernel_file quiet rootdelay=130
 initrd /boot/$initrd_file
-root=PARTUUID=$uuid
+root=PARTUUID=$rootuuid
 boot
 echo Loading Linux
 }" > /mnt/boot/grub/grub.cfg
@@ -302,7 +304,7 @@ text-align:center;font-family:Arial}</style></head><body><h1>It works!</h1><hr>
 EOF
 
 # fstab
-echo "UUID=$uuid  /  ext4  defaults,errors=remount-ro  0  1" > etc/fstab
+echo -ne "UUID=$rootuuid  /  ext4  defaults,errors=remount-ro  0  1" > etc/fstab
 
 # Path, prompt and aliases
 cat << EOF > etc/profile
@@ -577,7 +579,7 @@ find . | cpio -H newc -o 2> /dev/null | gzip > /mnt/boot/$initrd_file
 cd ..
 chmod 400 /mnt/boot/$initrd_file
 rm -r rootfs
-# umount /mnt
+umount /mnt
 printf "\n** all done **\n\n"
 
 
