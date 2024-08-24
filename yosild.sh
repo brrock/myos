@@ -198,7 +198,8 @@ EOF
 fi
 
 
-echo "** Partitioning /dev/$device" && sleep 2
+echo "** Partitioning /dev/$device and installing dosfstools" && sleep 2
+apt install dosfstools -y
 sgdisk --zap-all /dev/$device
 
 sgdisk -n 1:2048:+512M -t 1:ef00 -c 1:"EFI System" /dev/$device
