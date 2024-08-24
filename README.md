@@ -7,3 +7,4 @@ minimalistic Linux system for devices with little hardware resources. Yosild Lin
 needs just **70 MB RAM** and **40 MB storage size**. *yosild.sh* requires
 [minimal][1] *Debian* or *Ubuntu* distro to run with the architecture compatible
 with the target device.
+Note it currently doesnt work but will soon dont run the sricpt.
