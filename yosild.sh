@@ -595,6 +595,7 @@ chmod 400 /mnt/boot/$initrd_file
 rm -r rootfs
 umount /mnt
 umount /mnt/boot/efi
+umount -a
 printf "\n** all done **\n\n"
 
 
