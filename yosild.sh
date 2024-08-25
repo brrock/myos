@@ -258,18 +258,30 @@ kernel_file=vmlinuz-$kernel_release-$arch
 initrd_file=initrd.img-$kernel_release-$arch
 cp files/linux/arch/$arch/boot/bzImage /mnt/boot/$kernel_file
 
-echo "** Installation of GRUB"
-grub-install --target=x86_64-efi --efi-directory=/mnt/boot/efi --bootloader-id=GRUB
-mkdir pv /mnt/boot/grub
-printf "timeout=3
-menuentry '$distro_name - $distro_desc' {
-linux /boot/$kernel_file quiet rootdelay=130
-initrd /boot/$initrd_file
-root=PARTUUID=$rootuuid
-boot
-echo Loading Linux
-}" > /mnt/boot/grub/grub.cfg
+echo "** Installing GRUB"
+apt install grub-efi-amd64-bin grub-efi-amd64-signed -y
 
+grub-install --target=x86_64-efi --efi-directory=/mnt/boot/efi --bootloader-id=GRUB --removable
+
+if [ $? -eq 0 ]; then
+  echo "GRUB installation completed successfully."
+else
+  echo "GRUB installation failed."
+  exit 1
+fi
+
+# GRUB configuration
+mkdir -pv /mnt/boot/grub
+cat << EOF > /mnt/boot/grub/grub.cfg
+set timeout=3
+menuentry '$distro_name - $distro_desc' {
+    linux /boot/vmlinuz root=UUID=$rootuuid quiet
+    initrd /boot/initrd.img
+    boot
+}
+EOF
+
+echo "GRUB configuration created."
 # creation of necessary directories
 mkdir rootfs
 cd rootfs
