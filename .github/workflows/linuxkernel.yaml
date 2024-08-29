@@ -19,21 +19,21 @@ jobs:
       - name: Fetch and Inspect Page Content
         id: fetch_page
         run: |
-          # Fetch the list of v6.x tar.xz files from kernel.org
-          KERNEL_URL="https://www.kernel.org/pub/linux/kernel/v6.x/"
+          # Fetch the list of v6.x tar.xz files from the updated server link
+          KERNEL_URL="https://mirrors.edge.kernel.org/pub/linux/kernel/v6.x/"
           echo "Fetching kernel list from $KERNEL_URL"
           
-          # Store the fetched page content for debugging
+          # Fetch the page content
           curl -s $KERNEL_URL > page_content.html
           
-          # Output the fetched page content (for debugging purposes)
+          # Output the fetched page content for inspection
           echo "Fetched page content:"
-          cat page_content.html
+          head -n 20 page_content.html
 
       - name: Extract Latest Linux Kernel v6.x Version
         id: extract_kernel
         run: |
-          # Extract the latest linux-6.x.x.tar.xz file using grep and regex
+          # Extract the latest linux-6.x.x.tar.xz file
           LATEST_KERNEL_TAR_XZ=$(grep -oP 'linux-\K6\.[\d.]+(?=\.tar\.xz)' page_content.html | sort -V | tail -n 1)
 
           if [ -z "$LATEST_KERNEL_TAR_XZ" ]; then
@@ -42,7 +42,7 @@ jobs:
           fi
 
           # Construct the full URL of the tar.xz file
-          TAR_XZ_LINK="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${LATEST_KERNEL_TAR_XZ}.tar.xz"
+          TAR_XZ_LINK="https://mirrors.edge.kernel.org/pub/linux/kernel/v6.x/linux-${LATEST_KERNEL_TAR_XZ}.tar.xz"
           
           echo "Latest Kernel v6.x Version: $LATEST_KERNEL_TAR_XZ"
           echo "Kernel tar.xz Link: $TAR_XZ_LINK"
