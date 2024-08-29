@@ -1,4 +1,4 @@
-name: Fetch Latest Linux Kernel  Tar.xz
+name: Fetch Latest Linux Kernel v6.x Tar.xz
 
 on:
   schedule:
@@ -19,30 +19,21 @@ jobs:
       - name: Get Latest Linux Kernel v6.x Version
         id: get_kernel_v6
         run: |
-          # Fetch the list of v6.x tar.xz files
           KERNEL_URL="https://www.kernel.org/pub/linux/kernel/v6.x/"
           LATEST_KERNEL_TAR_XZ=$(curl -s $KERNEL_URL | grep -oP 'linux-\K6\.[\d.]+(?=\.tar\.xz)' | sort -V | tail -n 1)
-          
-          # Construct the full URL of the tar.xz file
           TAR_XZ_LINK="${KERNEL_URL}linux-${LATEST_KERNEL_TAR_XZ}.tar.xz"
-
-          echo "Latest Kernel v6.x Version: $LATEST_KERNEL_TAR_XZ"
-          echo "Kernel tar.xz Link: $TAR_XZ_LINK"
-
-          # Export the link as an environment variable
           echo "TAR_XZ_LINK=$TAR_XZ_LINK" >> $GITHUB_ENV
 
       - name: Save Kernel tar.xz Link to kernel.txt
         run: |
-          echo "Saving the latest kernel tar.xz link to kernel.txt"
           echo "${{ env.TAR_XZ_LINK }}" > kernel.txt
 
       - name: Commit kernel.txt to the repository
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Add and commit kernel.txt to the repository
           git add kernel.txt
           git commit -m "Update kernel.txt with latest v6.x kernel tar.xz link"
-          git push
+          
+          # Use PAT token for authentication
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/brrock/myos.git HEAD:main
