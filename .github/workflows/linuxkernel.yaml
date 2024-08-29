@@ -1,8 +1,7 @@
 name: Fetch Latest Linux Kernel v6.x Tar.xz
-
 on:
   schedule:
-    - cron: "0 12 * * *" # Runs every friday 8 am UTC
+    - cron: "0 12 * * *" # Runs every day at 12:00 UTC
   workflow_dispatch: # Allows manual triggering of the action
   push:
     branches:
@@ -37,8 +36,9 @@ jobs:
           LATEST_KERNEL_TAR_XZ=$(grep -oP 'linux-\K6\.[\d.]+(?=\.tar\.xz)' page_content.html | sort -V | tail -n 1)
 
           if [ -z "$LATEST_KERNEL_TAR_XZ" ]; then
-            echo "Error: Failed to find the latest Linux v6.x tar.xz file"
-            exit 1
+            echo "No new Linux v6.x tar.xz file found."
+            echo "KERNEL_UPDATED=false" >> $GITHUB_ENV
+            exit 0
           fi
 
           # Construct the full URL of the tar.xz file
@@ -49,12 +49,15 @@ jobs:
 
           # Export the link as an environment variable
           echo "TAR_XZ_LINK=$TAR_XZ_LINK" >> $GITHUB_ENV
+          echo "KERNEL_UPDATED=true" >> $GITHUB_ENV
 
       - name: Save Kernel tar.xz Link to kernel.txt
+        if: env.KERNEL_UPDATED == 'true'
         run: |
           echo "${{ env.TAR_XZ_LINK }}" > kernel.txt
 
       - name: Commit kernel.txt to the repository
+        if: env.KERNEL_UPDATED == 'true'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -63,3 +66,8 @@ jobs:
           
           # Use the built-in GITHUB_TOKEN for authentication
           git push https://github.com/brrock/myos.git HEAD:main
+
+      - name: Notify No New Kernel
+        if: env.KERNEL_UPDATED == 'false'
+        run: |
+          echo "No new kernel was found. No update needed."
