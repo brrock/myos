@@ -14,7 +14,7 @@ distro_desc="Your simple Linux distro"
 distro_codename="onepointo"
 telnetd_enabled="true"
 hyperv_support="false"
-kernel="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.10.6.tar.xz"
+kernel=$(<kernel.txt)
 # ---------------------------------------
 
 if [ $(id -u) -ne 0 ]; then
