@@ -21,7 +21,19 @@ jobs:
         run: |
           KERNEL_URL="https://www.kernel.org/pub/linux/kernel/v6.x/"
           LATEST_KERNEL_TAR_XZ=$(curl -s $KERNEL_URL | grep -oP 'linux-\K6\.[\d.]+(?=\.tar\.xz)' | sort -V | tail -n 1)
-          TAR_XZ_LINK="${KERNEL_URL}linux-${LATEST_KERNEL_TAR_XZ}.tar.xz"
+
+          if [ -z "$LATEST_KERNEL_TAR_XZ" ]; then
+            echo "Error: Failed to find the latest Linux v6.x tar.xz file"
+            exit 1
+          fi
+
+          # Construct the full URL of the tar.xz file
+          TAR_XZ_LINK="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${LATEST_KERNEL_TAR_XZ}.tar.xz"
+          
+          echo "Latest Kernel v6.x Version: $LATEST_KERNEL_TAR_XZ"
+          echo "Kernel tar.xz Link: $TAR_XZ_LINK"
+
+          # Export the link as an environment variable
           echo "TAR_XZ_LINK=$TAR_XZ_LINK" >> $GITHUB_ENV
 
       - name: Save Kernel tar.xz Link to kernel.txt
@@ -35,5 +47,5 @@ jobs:
           git add kernel.txt
           git commit -m "Update kernel.txt with latest v6.x kernel tar.xz link"
           
-          # Use PAT token for authentication
-          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/brrock/myos.git HEAD:main
+          # Use the built-in GITHUB_TOKEN for authentication
+          git push https://github.com/brrock/myos.git HEAD:main
