@@ -14,7 +14,7 @@ distro_desc="Your simple Linux distro"
 distro_codename="onepointo"
 telnetd_enabled="true"
 hyperv_support="false"
-kernel=$(<kernel.txt)
+kernel=$(cat kernel.txt)
 # ---------------------------------------
 
 if [ $(id -u) -ne 0 ]; then

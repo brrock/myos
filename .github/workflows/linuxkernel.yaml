@@ -2,7 +2,7 @@ name: Fetch Latest Linux Kernel v6.x Tar.xz
 
 on:
   schedule:
-    - cron: "0 12 * * *" # Runs every day at 12:00 UTC
+    - cron: "0 8 * * FRI" # Runs every friday 8 am UTC
   workflow_dispatch: # Allows manual triggering of the action
   push:
     branches:
