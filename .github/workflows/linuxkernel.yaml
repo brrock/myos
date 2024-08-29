@@ -16,11 +16,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Get Latest Linux Kernel v6.x Version
-        id: get_kernel_v6
+      - name: Fetch and Inspect Page Content
+        id: fetch_page
         run: |
+          # Fetch the list of v6.x tar.xz files from kernel.org
           KERNEL_URL="https://www.kernel.org/pub/linux/kernel/v6.x/"
-          LATEST_KERNEL_TAR_XZ=$(curl -s $KERNEL_URL | grep -oP 'linux-\K6\.[\d.]+(?=\.tar\.xz)' | sort -V | tail -n 1)
+          echo "Fetching kernel list from $KERNEL_URL"
+          
+          # Store the fetched page content for debugging
+          curl -s $KERNEL_URL > page_content.html
+          
+          # Output the fetched page content (for debugging purposes)
+          echo "Fetched page content:"
+          cat page_content.html
+
+      - name: Extract Latest Linux Kernel v6.x Version
+        id: extract_kernel
+        run: |
+          # Extract the latest linux-6.x.x.tar.xz file using grep and regex
+          LATEST_KERNEL_TAR_XZ=$(grep -oP 'linux-\K6\.[\d.]+(?=\.tar\.xz)' page_content.html | sort -V | tail -n 1)
 
           if [ -z "$LATEST_KERNEL_TAR_XZ" ]; then
             echo "Error: Failed to find the latest Linux v6.x tar.xz file"
