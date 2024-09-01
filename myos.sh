@@ -23,7 +23,7 @@ fi
 
 # Check if the file test.sh is executable
 if [ -x "pkginstaller.sh" ]; then
-    
+    echo "alreday chmoded"
 else
     chmod +x "pkginstaller.sh"
 fi 
@@ -485,7 +485,7 @@ cd ..
 chmod 400 /mnt/boot/$initrd_file
 rm -r rootfs
 mkdir -pv /mnt/boot/grub
-./pkginstaller.sh grub2 efibootmgr grub-common
+./pkginstaller.sh grub2 efibootmgr grub-common curl wget nano bash 
 chroot /mnt  grub-mkconfig --output=/boot/grub/grub.cfg
 chroot /mnt  update-grub
 umount /mnt
