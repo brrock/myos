@@ -487,10 +487,10 @@ rm -r rootfs
 mkdir -pv /mnt/boot/grub
 ./pkginstaller.sh grub2 efibootmgr grub-common
 chroot /mnt  grub-mkconfig --output=/boot/grub/grub.cfg
-
+chroot /mnt  update-grub
 umount /mnt
 umount /mnt/boot/efi
-umount -a
+update-grub
 printf "\n** all done **\n\n"
 
 
