@@ -21,6 +21,13 @@ if [ $(id -u) -ne 0 ]; then
   echo "Run as root"; exit 1
 fi
 
+# Check if the file test.sh is executable
+if [ -x "pkginstaller.sh" ]; then
+    
+else
+    chmod +x "pkginstaller.sh"
+fi 
+
 clear && printf "\n** $distro_name - creating distribution\n\n"
 printf "** Are you sure that you want to delete all data from /dev/$device drive? (y/n): "
 read answer
@@ -152,15 +159,6 @@ else
 fi
 
 # GRUB configuration
-mkdir -pv /mnt/boot/grub
-cat << EOF > /mnt/boot/grub/grub.cfg
-set timeout=3
-menuentry '$distro_name - $distro_desc' {
-    linux /boot/vmlinuz root=UUID=$rootuuid quiet
-    initrd /boot/initrd.img
-    boot
-}
-EOF
 
 echo "GRUB configuration created."
 # creation of necessary directories
@@ -486,6 +484,10 @@ find . | cpio -H newc -o 2> /dev/null | gzip > /mnt/boot/$initrd_file
 cd ..
 chmod 400 /mnt/boot/$initrd_file
 rm -r rootfs
+mkdir -pv /mnt/boot/grub
+./pkginstaller.sh grub2 efibootmgr grub-common
+chroot /mnt  grub-mkconfig --output=/boot/grub/grub.cfg
+
 umount /mnt
 umount /mnt/boot/efi
 umount -a
