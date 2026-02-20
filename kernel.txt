@@ -1,1 +1,1 @@
-https://mirrors.edge.kernel.org/pub/linux/kernel/v6.x/linux-6.19.2.tar.xz
+https://mirrors.edge.kernel.org/pub/linux/kernel/v6.x/linux-6.19.3.tar.xz
